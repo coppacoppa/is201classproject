@@ -10959,10 +10959,11 @@ html {
 
 .callout {
   padding: 15rem 0;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%), url("../assets/img/bg-callout.jpg");
+  background-color: #000;
+  background-image: url("../assets/img/climbinggear5k.jpg");
   background-position: center center;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: contain;
 }
 .callout h2, .callout .h2 {
   font-size: 3.5rem;
@@ -11023,6 +11024,32 @@ footer.footer .social-link:hover {
   font-size: 4rem;
   margin: 0;
   padding: 0;
+}
+.glass-title {
+  display: block;
+  width: -moz-fit-content;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0.35em 0.7em;
+  border-radius: 16px;
+  color: #111;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14);
+}
+a.glass-title,
+a.glass-title:hover,
+a.glass-title:focus,
+a.glass-title:active {
+  color: #111;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 @media (min-width: 992px) {
   .masthead {
@@ -11107,4 +11134,25 @@ footer.footer .social-link:hover {
   line-height: 7.5rem;
   font-size: 2.25rem;
   box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.1);
+}
+.service-icon.brand-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: normal;
+  padding: 0.9rem;
+  overflow: hidden;
+  transition: background-color 0.2s ease-in-out;
+}
+.service-icon.brand-logo:hover,
+.service-icon.brand-logo:focus {
+  background-color: #2f2f2f;
+}
+.service-icon.brand-logo img {
+  width: 100%;
+  height: 100%;
+  max-width: 4.8rem;
+  max-height: 4.8rem;
+  -o-object-fit: contain;
+     object-fit: contain;
 }

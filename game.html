@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>Rock Climber Physics</title>
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+  <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+  <link href="css/styles.css" rel="stylesheet" />
+  <style>
+    body.physics-game-page {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at 20% 15%, #2a313a 0%, #171d24 62%, #12171d 100%);
+      color: #eaf2ff;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      display: grid;
+      place-items: center;
+      padding: 2rem 1rem;
+    }
+
+    .physics-shell {
+      width: min(460px, 95vw);
+      text-align: center;
+    }
+
+    .physics-shell h1 {
+      margin: 0 0 0.5rem;
+      color: #eff5ff;
+      letter-spacing: 0.04em;
+      font-size: 1.6rem;
+      text-transform: uppercase;
+    }
+
+    .physics-shell .subtitle {
+      margin: 0 0 1rem;
+      color: #b8c6d8;
+      font-size: 0.95rem;
+      line-height: 1.35;
+    }
+
+    .stage-wrap {
+      position: relative;
+      width: 420px;
+      height: 680px;
+      max-width: 100%;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid rgba(233, 241, 255, 0.14);
+      box-shadow: 0 16px 34px rgba(0, 0, 0, 0.45);
+      margin: 0 auto;
+      background: #202833;
+    }
+
+    #gameCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+
+    .hud {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+      font-weight: 700;
+      font-size: 0.82rem;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    }
+
+    .pill {
+      background: rgba(16, 20, 25, 0.68);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 999px;
+      padding: 5px 10px;
+      white-space: nowrap;
+      color: #f2f7ff;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(to bottom, rgba(12, 16, 21, 0.44), rgba(8, 11, 14, 0.84));
+      padding: 1rem;
+    }
+
+    .overlay.hidden {
+      display: none;
+    }
+
+    .panel {
+      width: min(360px, 100%);
+      background: rgba(17, 21, 27, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      box-shadow: 0 14px 26px rgba(0, 0, 0, 0.38);
+      padding: 1rem 1rem 1.1rem;
+      text-align: left;
+    }
+
+    .panel h2 {
+      margin: 0 0 0.5rem;
+      text-align: center;
+      color: #f4f9ff;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      font-size: 1.15rem;
+    }
+
+    .panel p {
+      margin: 0.45rem 0;
+      color: #d2dfef;
+      font-size: 0.93rem;
+      line-height: 1.35;
+    }
+
+    .panel strong {
+      color: #ffffff;
+    }
+
+    .panel button {
+      display: block;
+      width: 100%;
+      margin-top: 0.8rem;
+      border: 0;
+      border-radius: 8px;
+      padding: 0.7rem 0.85rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #f7fbff;
+      background: linear-gradient(135deg, #2d7df0, #1a57b1);
+      cursor: pointer;
+    }
+
+    .panel button:hover {
+      filter: brightness(1.08);
+    }
+
+    .stage-buttons {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      z-index: 30;
+      pointer-events: none;
+    }
+
+    .stage-buttons button {
+      pointer-events: auto;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 8px;
+      padding: 0.45rem 0.65rem;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: #f4f8ff;
+      background: rgba(14, 18, 23, 0.72);
+      cursor: pointer;
+    }
+
+    .stage-buttons button:hover {
+      background: rgba(28, 34, 41, 0.9);
+    }
+
+    .legend {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 0.65rem;
+      font-size: 0.8rem;
+      color: #e7eff9;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 4px;
+    }
+
+    .dot.grippy {
+      background: #7de481;
+    }
+
+    .dot.slippery {
+      background: #78b4ff;
+    }
+  </style>
+</head>
+<body id="page-top" class="physics-game-page">
+  <a class="menu-toggle rounded" href="#"><i class="fas fa-bars"></i></a>
+  <nav id="sidebar-wrapper">
+    <ul class="sidebar-nav">
+      <li class="sidebar-brand"><a class="js-scroll-trigger" href="index.html">Climb</a></li>
+      <li class="sidebar-nav-item"><a class="js-scroll-trigger" href="index.html">Home</a></li>
+      <li class="sidebar-nav-item"><a class="js-scroll-trigger" href="scratch.html">Scratch</a></li>
+      <li class="sidebar-nav-item"><a class="js-scroll-trigger" href="game.html">Game</a></li>
+    </ul>
+  </nav>
+
+  <main class="physics-shell">
+    <h1>Rock Climber</h1>
+    <p class="subtitle">Physics climbing. Grab holds, press Space to pull up, avoid hazards, and reach the summit.</p>
+
+    <section class="stage-wrap">
+      <canvas id="gameCanvas" width="420" height="680" aria-label="Rock Climber physics game"></canvas>
+
+      <div class="hud">
+        <span class="pill" id="heightReadout">Height: 0 m</span>
+        <span class="pill" id="handReadout">Hands: 0/2</span>
+        <span class="pill" id="checkpointReadout">Checkpoint: Base</span>
+      </div>
+
+      <div class="overlay" id="startScreen">
+        <div class="panel">
+          <h2>Start Climb</h2>
+          <p><strong>Left-click:</strong> left-hand grab</p>
+          <p><strong>Right-click / F:</strong> right-hand grab</p>
+          <p><strong>Space:</strong> pull upward while attached</p>
+          <p><strong>C:</strong> save checkpoint, <strong>R:</strong> return to checkpoint</p>
+          <div class="legend">
+            <span><i class="dot grippy"></i>Grippy</span>
+            <span><i class="dot slippery"></i>Slippery</span>
+          </div>
+          <button id="startButton" type="button">Start Game</button>
+        </div>
+      </div>
+
+      <div class="overlay hidden" id="endScreen">
+        <div class="panel">
+          <h2 id="endTitle">Game Over</h2>
+          <p id="endMessage">You fell from the wall.</p>
+          <p id="endHeight">Height: 0 m</p>
+          <button id="restartButton" type="button">Play Again</button>
+        </div>
+      </div>
+
+      <div class="overlay hidden" id="pauseScreen">
+        <div class="panel">
+          <h2>Paused</h2>
+          <p><strong>Left-click:</strong> left-hand grab</p>
+          <p><strong>Right-click / F:</strong> right-hand grab</p>
+          <p><strong>Space:</strong> pull upward while attached</p>
+          <p><strong>C:</strong> save checkpoint, <strong>R:</strong> return to checkpoint</p>
+          <p><strong>Esc:</strong> resume/pause</p>
+          <div class="legend">
+            <span><i class="dot grippy"></i>grippy</span>
+            <span><i class="dot slippery"></i>slippery</span>
+          </div>
+          <button id="resumeButton" type="button">Resume</button>
+        </div>
+      </div>
+
+      <div class="stage-buttons">
+        <button id="restartCornerButton" type="button">Restart</button>
+        <button id="pauseButton" type="button">Pause</button>
+      </div>
+    </section>
+  </main>
+
+  <a class="scroll-to-top rounded" href="#page-top"><i class="fas fa-angle-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      const canvas = document.getElementById("gameCanvas");
+      const ctx = canvas.getContext("2d");
+      const startScreen = document.getElementById("startScreen");
+      const endScreen = document.getElementById("endScreen");
+      const pauseScreen = document.getElementById("pauseScreen");
+      const startButton = document.getElementById("startButton");
+      const restartButton = document.getElementById("restartButton");
+      const restartCornerButton = document.getElementById("restartCornerButton");
+      const pauseButton = document.getElementById("pauseButton");
+      const resumeButton = document.getElementById("resumeButton");
+      const endTitle = document.getElementById("endTitle");
+      const endMessage = document.getElementById("endMessage");
+      const endHeight = document.getElementById("endHeight");
+      const heightReadout = document.getElementById("heightReadout");
+      const handReadout = document.getElementById("handReadout");
+      const checkpointReadout = document.getElementById("checkpointReadout");
+
+      const W = canvas.width;
+      const H = canvas.height;
+      const START_Y = 1200;
+      const GOAL_Y = -2800;
+      const HAND_REACH = 132;
+      const ARM_UPPER = 46;
+      const ARM_LOWER = 46;
+      const HOLD_RADIUS = 16;
+      const PULL_SPEED = 210;
+      const GRAVITY = 760;
+      const MAX_FALL_SPEED = 540;
+      const LEAN_DEADZONE = 10;
+      const LEAN_ACCEL = 0.0027;
+      const MAX_LEAN_SPEED = 160;
+      const LEAN_DAMPING = 0.86;
+
+      let mode = "start";
+      let cameraY = START_Y - H * 0.64;
+      let scoreMeters = 0;
+      let frameTimePrev = 0;
+      let spaceDown = false;
+      let checkpoint = { x: W / 2, y: START_Y, label: "Base" };
+
+      const climber = {
+        x: W / 2,
+        y: START_Y,
+        width: 40,
+        height: 58,
+        vx: 0,
+        vy: 0
+      };
+
+      const hands = {
+        left: { x: W / 2 - 24, y: START_Y - 5, isAttached: false, holdIndex: -1, color: "#6ec7ff", side: -1 },
+        right: { x: W / 2 + 24, y: START_Y - 5, isAttached: false, holdIndex: -1, color: "#9fe0ff", side: 1 }
+      };
+
+      const mouse = {
+        x: W / 2,
+        y: H / 2,
+        worldX: W / 2,
+        worldY: START_Y,
+        leftDown: false,
+        rightDown: false
+      };
+
+      let holds = [];
+
+      function rand(min, max) {
+        return min + Math.random() * (max - min);
+      }
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function distance(a, b) {
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        return Math.hypot(dx, dy);
+      }
+
+      function toWorld(screenX, screenY) {
+        return { x: screenX, y: screenY + cameraY };
+      }
+
+      function toScreen(worldX, worldY) {
+        return { x: worldX, y: worldY - cameraY };
+      }
+
+      function getShoulder(key, bodyX, bodyY) {
+        const side = key === "left" ? -1 : 1;
+        const x = (bodyX !== undefined ? bodyX : climber.x) + side * (climber.width / 2);
+        const y = (bodyY !== undefined ? bodyY : climber.y) - climber.height * 0.34;
+        return { x, y };
+      }
+
+      function bothHandsOnSameHold() {
+        return (
+          hands.left.isAttached &&
+          hands.right.isAttached &&
+          hands.left.holdIndex === hands.right.holdIndex
+        );
+      }
+
+      function getEffectiveGrip(hand) {
+        if (!hand.isAttached || hand.holdIndex < 0) {
+          return 0;
+        }
+
+        const hold = holds[hand.holdIndex];
+        if (!hold) {
+          return 0;
+        }
+
+        if (hold.type === "slippery" && bothHandsOnSameHold()) {
+          return 1;
+        }
+
+        return hold.grip;
+      }
+
+      function createHold(x, y, type) {
+        holds.push({
+          x,
+          y,
+          radius: HOLD_RADIUS,
+          type,
+          grip: type === "grippy" ? 1 : 0.46,
+          color: type === "grippy" ? "#7de481" : "#78b4ff"
+        });
+      }
+
+      function generateHolds() {
+        holds = [];
+        createHold(W / 2 - 40, START_Y - 56, "grippy");
+        createHold(W / 2 + 36, START_Y - 88, "grippy");
+
+        let x = W / 2;
+        let y = START_Y - 150;
+
+        while (y > GOAL_Y - 260) {
+          x = clamp(x + rand(-130, 130), 54, W - 54);
+          y -= rand(74, 114);
+          const type = Math.random() < 0.34 ? "slippery" : "grippy";
+          createHold(x, y, type);
+        }
+      }
+
+      function detachHand(hand) {
+        hand.isAttached = false;
+        hand.holdIndex = -1;
+      }
+
+      function closestHold(point, maxDist) {
+        let bestIndex = -1;
+        let bestDist = maxDist;
+
+        for (let i = 0; i < holds.length; i += 1) {
+          const hold = holds[i];
+          const d = distance(point, hold);
+          if (d < bestDist) {
+            bestDist = d;
+            bestIndex = i;
+          }
+        }
+
+        return bestIndex;
+      }
+
+      function attemptGrab(key) {
+        if (mode !== "playing") {
+          return;
+        }
+
+        const hand = hands[key];
+        const point = { x: mouse.worldX, y: mouse.worldY };
+        const index = closestHold(point, HOLD_RADIUS + 14);
+
+        if (index < 0) {
+          detachHand(hand);
+          return;
+        }
+
+        const shoulder = getShoulder(key);
+        const hold = holds[index];
+        if (distance(shoulder, hold) > HAND_REACH + 32) {
+          return;
+        }
+
+        hand.isAttached = true;
+        hand.holdIndex = index;
+        hand.x = hold.x;
+        hand.y = hold.y;
+      }
+
+      function updateHands(dtMs) {
+        const dt = dtMs / 1000;
+        const handKeys = ["left", "right"];
+
+        for (let i = 0; i < handKeys.length; i += 1) {
+          const key = handKeys[i];
+          const hand = hands[key];
+          const shoulder = getShoulder(key);
+
+          if (hand.isAttached) {
+            const hold = holds[hand.holdIndex];
+            if (!hold) {
+              detachHand(hand);
+            } else {
+              hand.x = hold.x;
+              hand.y = hold.y;
+            }
+            continue;
+          }
+
+          const isAiming = key === "left" ? mouse.leftDown : mouse.rightDown;
+          let target;
+
+          if (isAiming) {
+            const dx = mouse.worldX - shoulder.x;
+            const dy = mouse.worldY - shoulder.y;
+            const len = Math.hypot(dx, dy) || 1;
+            const scale = Math.min(1, HAND_REACH / len);
+            target = {
+              x: shoulder.x + dx * scale,
+              y: shoulder.y + dy * scale
+            };
+          } else {
+            target = {
+              x: shoulder.x + hand.side * 24,
+              y: shoulder.y + 20
+            };
+          }
+
+          const follow = Math.min(1, dt * 13.5);
+          hand.x += (target.x - hand.x) * follow;
+          hand.y += (target.y - hand.y) * follow;
+        }
+      }
+
+      function applyLean(dt) {
+        const dx = mouse.x - climber.x;
+        let targetVx = 0;
+        if (Math.abs(dx) > LEAN_DEADZONE) {
+          targetVx = clamp(dx * LEAN_ACCEL * 60, -MAX_LEAN_SPEED, MAX_LEAN_SPEED);
+        }
+
+        climber.vx += (targetVx - climber.vx) * Math.min(1, dt * 11);
+        climber.vx *= LEAN_DAMPING;
+        climber.x += climber.vx * dt;
+        climber.x = clamp(climber.x, 28, W - 28);
+      }
+
+      function shoulderClampY() {
+        const shoulderOffsetY = -climber.height * 0.34;
+        const armMax = ARM_UPPER + ARM_LOWER - 2;
+        let minBodyY = -Infinity;
+        const keys = ["left", "right"];
+
+        for (let i = 0; i < keys.length; i += 1) {
+          const key = keys[i];
+          const hand = hands[key];
+          if (!hand.isAttached) {
+            continue;
+          }
+
+          const shoulderX = climber.x + hand.side * (climber.width / 2);
+          const dx = Math.abs(hand.x - shoulderX);
+
+          // If horizontal offset is too large, this hand cannot support
+          // much upward travel until player leans back toward it.
+          if (dx >= armMax - 0.001) {
+            const bodyLimitFlat = hand.y - shoulderOffsetY;
+            minBodyY = Math.max(minBodyY, bodyLimitFlat);
+            continue;
+          }
+
+          const verticalReach = Math.sqrt(Math.max(0, armMax * armMax - dx * dx));
+          const bodyLimit = hand.y - verticalReach - shoulderOffsetY;
+          minBodyY = Math.max(minBodyY, bodyLimit);
+        }
+
+        return Number.isFinite(minBodyY) ? minBodyY : -Infinity;
+      }
+
+      function resolveSlip(dt) {
+        const sameBlue = bothHandsOnSameHold() &&
+          hands.left.isAttached &&
+          holds[hands.left.holdIndex] &&
+          holds[hands.left.holdIndex].type === "slippery";
+
+        const keys = ["left", "right"];
+        for (let i = 0; i < keys.length; i += 1) {
+          const key = keys[i];
+          const hand = hands[key];
+          if (!hand.isAttached) {
+            continue;
+          }
+
+          const hold = holds[hand.holdIndex];
+          if (!hold) {
+            detachHand(hand);
+            continue;
+          }
+
+          const shoulder = getShoulder(key);
+          const overreach = Math.max(0, distance(shoulder, hold) - HAND_REACH);
+          const grip = getEffectiveGrip(hand);
+          const overreachChance = overreach * (grip >= 0.95 ? 0.0012 : 0.0045);
+
+          if (Math.random() < overreachChance) {
+            detachHand(hand);
+            continue;
+          }
+
+          if (hold.type === "slippery" && !sameBlue) {
+            const pullStress = spaceDown ? 0.018 : 0.006;
+            if (Math.random() < pullStress * dt * 60) {
+              detachHand(hand);
+            }
+          }
+        }
+      }
+
+      function updateMovement(dtMs) {
+        const dt = dtMs / 1000;
+        const attachedCount = (hands.left.isAttached ? 1 : 0) + (hands.right.isAttached ? 1 : 0);
+
+        applyLean(dt);
+
+        if (spaceDown && attachedCount > 0) {
+          const grip = (
+            (hands.left.isAttached ? getEffectiveGrip(hands.left) : 0) +
+            (hands.right.isAttached ? getEffectiveGrip(hands.right) : 0)
+          ) / attachedCount;
+
+          let targetY = climber.y - PULL_SPEED * grip * dt;
+          const minBodyY = shoulderClampY();
+          if (targetY < minBodyY) {
+            targetY = minBodyY;
+          }
+
+          climber.y = targetY;
+          climber.vy = 0;
+          resolveSlip(dt);
+          return;
+        }
+
+        if (attachedCount === 0) {
+          climber.vy += GRAVITY * dt;
+          climber.vy = Math.min(climber.vy, MAX_FALL_SPEED);
+          climber.y += climber.vy * dt;
+        } else {
+          climber.vy = 0;
+          const minBodyY = shoulderClampY();
+          if (climber.y < minBodyY) {
+            climber.y = minBodyY;
+          }
+          resolveSlip(dt);
+        }
+      }
+
+      function solveIK(shoulder, handTarget, bendDirection) {
+        const dx = handTarget.x - shoulder.x;
+        const dy = handTarget.y - shoulder.y;
+        let d = Math.hypot(dx, dy);
+        if (d < 0.0001) {
+          d = 0.0001;
+        }
+
+        d = clamp(d, Math.abs(ARM_UPPER - ARM_LOWER) + 0.001, ARM_UPPER + ARM_LOWER - 0.001);
+
+        const a = (ARM_UPPER * ARM_UPPER - ARM_LOWER * ARM_LOWER + d * d) / (2 * d);
+        const hSq = Math.max(0, ARM_UPPER * ARM_UPPER - a * a);
+        const h = Math.sqrt(hSq);
+        const px = shoulder.x + (a * dx) / d;
+        const py = shoulder.y + (a * dy) / d;
+        const nx = -dy / d;
+        const ny = dx / d;
+
+        return {
+          x: px + nx * h * bendDirection,
+          y: py + ny * h * bendDirection
+        };
+      }
+
+      function drawBackground() {
+        const grad = ctx.createLinearGradient(0, 0, 0, H);
+        grad.addColorStop(0, "#1f2732");
+        grad.addColorStop(1, "#12171e");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+
+        const ridgeOffset = ((cameraY * 0.28) % 92 + 92) % 92;
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+        ctx.lineWidth = 1;
+        for (let y = -92 + ridgeOffset; y < H + 100; y += 92) {
+          ctx.beginPath();
+          ctx.moveTo(0, y + 24);
+          ctx.lineTo(W, y - 16);
+          ctx.stroke();
+        }
+
+        ctx.fillStyle = "#2f3743";
+        ctx.beginPath();
+        ctx.moveTo(0, H);
+        ctx.lineTo(70, 320);
+        ctx.lineTo(170, 460);
+        ctx.lineTo(255, 240);
+        ctx.lineTo(350, 400);
+        ctx.lineTo(W, H);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = "#343e4b";
+        ctx.beginPath();
+        ctx.moveTo(0, H);
+        ctx.lineTo(55, 460);
+        ctx.lineTo(150, 350);
+        ctx.lineTo(245, 520);
+        ctx.lineTo(355, 320);
+        ctx.lineTo(W, H);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      function drawGoal() {
+        const y = GOAL_Y - cameraY;
+        if (y < -40 || y > H + 40) {
+          return;
+        }
+
+        ctx.strokeStyle = "#ffd56b";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(20, y);
+        ctx.lineTo(W - 20, y);
+        ctx.stroke();
+
+        ctx.fillStyle = "#ffd56b";
+        ctx.font = "bold 13px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("SUMMIT", W / 2, y - 8);
+      }
+
+      function drawHolds() {
+        for (let i = 0; i < holds.length; i += 1) {
+          const hold = holds[i];
+          const pos = toScreen(hold.x, hold.y);
+          if (pos.y < -26 || pos.y > H + 26) {
+            continue;
+          }
+
+          ctx.beginPath();
+          ctx.arc(pos.x, pos.y, hold.radius, 0, Math.PI * 2);
+          ctx.fillStyle = hold.color;
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = "rgba(10, 14, 20, 0.86)";
+          ctx.stroke();
+        }
+      }
+
+      function drawClimber() {
+        const center = toScreen(climber.x, climber.y);
+        const shoulders = {
+          left: getShoulder("left"),
+          right: getShoulder("right")
+        };
+        const leftElbow = solveIK(shoulders.left, hands.left, -1);
+        const rightElbow = solveIK(shoulders.right, hands.right, 1);
+
+        function drawArm(shoulder, elbow, hand, color) {
+          const s = toScreen(shoulder.x, shoulder.y);
+          const e = toScreen(elbow.x, elbow.y);
+          const h = toScreen(hand.x, hand.y);
+
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 5;
+          ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.moveTo(s.x, s.y);
+          ctx.lineTo(e.x, e.y);
+          ctx.lineTo(h.x, h.y);
+          ctx.stroke();
+
+          ctx.fillStyle = "#dbe8ff";
+          ctx.beginPath();
+          ctx.arc(h.x, h.y, 5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        drawArm(shoulders.left, leftElbow, hands.left, hands.left.color);
+        drawArm(shoulders.right, rightElbow, hands.right, hands.right.color);
+
+        ctx.save();
+        ctx.translate(center.x, center.y);
+        ctx.fillStyle = "#3b95ff";
+        ctx.fillRect(-climber.width / 2, -climber.height / 2, climber.width, climber.height);
+        ctx.fillStyle = "#c8dcf7";
+        ctx.beginPath();
+        ctx.arc(0, -climber.height / 2 - 9, 9, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#ecf4ff";
+        ctx.lineWidth = 1.2;
+        ctx.strokeRect(-climber.width / 2 + 0.5, -climber.height / 2 + 0.5, climber.width - 1, climber.height - 1);
+        ctx.restore();
+      }
+
+      function drawMouseGuide() {
+        const attached = (hands.left.isAttached ? 1 : 0) + (hands.right.isAttached ? 1 : 0);
+        ctx.save();
+        ctx.strokeStyle = attached ? "rgba(127, 230, 153, 0.72)" : "rgba(170, 197, 233, 0.55)";
+        ctx.lineWidth = 1.3;
+        ctx.beginPath();
+        ctx.arc(mouse.x, mouse.y, 10, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(mouse.x - 14, mouse.y);
+        ctx.lineTo(mouse.x + 14, mouse.y);
+        ctx.moveTo(mouse.x, mouse.y - 14);
+        ctx.lineTo(mouse.x, mouse.y + 14);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function render() {
+        drawBackground();
+        drawGoal();
+        drawHolds();
+        drawClimber();
+        drawMouseGuide();
+      }
+
+      function resetPlayerPosition() {
+        climber.x = checkpoint.x;
+        climber.y = checkpoint.y;
+        climber.vx = 0;
+        climber.vy = 0;
+
+        detachHand(hands.left);
+        detachHand(hands.right);
+
+        if (checkpoint.label === "Base" && holds.length > 1) {
+          hands.left.isAttached = true;
+          hands.left.holdIndex = 0;
+          hands.left.x = holds[0].x;
+          hands.left.y = holds[0].y;
+          hands.right.x = holds[1].x;
+          hands.right.y = holds[1].y;
+        }
+      }
+
+      function updateHud() {
+        const attachedHands = (hands.left.isAttached ? 1 : 0) + (hands.right.isAttached ? 1 : 0);
+        heightReadout.textContent = "Height: " + scoreMeters + " m";
+        handReadout.textContent = "Hands: " + attachedHands + "/2";
+        checkpointReadout.textContent = "Checkpoint: " + checkpoint.label;
+      }
+
+      function beginGame() {
+        mode = "playing";
+        scoreMeters = 0;
+        checkpoint = { x: W / 2, y: START_Y, label: "Base" };
+        cameraY = START_Y - H * 0.64;
+        spaceDown = false;
+        mouse.leftDown = false;
+        mouse.rightDown = false;
+
+        generateHolds();
+        resetPlayerPosition();
+        updateHud();
+
+        startScreen.classList.add("hidden");
+        endScreen.classList.add("hidden");
+        pauseScreen.classList.add("hidden");
+        pauseButton.textContent = "Pause";
+      }
+
+      function pauseGame() {
+        if (mode !== "playing") {
+          return;
+        }
+        mode = "paused";
+        mouse.leftDown = false;
+        mouse.rightDown = false;
+        spaceDown = false;
+        pauseScreen.classList.remove("hidden");
+        pauseButton.textContent = "Resume";
+      }
+
+      function resumeGame() {
+        if (mode !== "paused") {
+          return;
+        }
+        mode = "playing";
+        spaceDown = false;
+        pauseScreen.classList.add("hidden");
+        pauseButton.textContent = "Pause";
+      }
+
+      function endGame(title, message) {
+        if (mode !== "playing") {
+          return;
+        }
+        mode = "ended";
+        spaceDown = false;
+        mouse.leftDown = false;
+        mouse.rightDown = false;
+        endTitle.textContent = title;
+        endMessage.textContent = message;
+        endHeight.textContent = "Height: " + scoreMeters + " m";
+        pauseScreen.classList.add("hidden");
+        pauseButton.textContent = "Pause";
+        endScreen.classList.remove("hidden");
+      }
+
+      function handleMouseMove(event) {
+        const rect = canvas.getBoundingClientRect();
+        const x = ((event.clientX - rect.left) / rect.width) * W;
+        const y = ((event.clientY - rect.top) / rect.height) * H;
+        mouse.x = x;
+        mouse.y = y;
+        mouse.worldX = x;
+        mouse.worldY = y + cameraY;
+      }
+
+      function saveCheckpoint() {
+        if (mode !== "playing") {
+          return;
+        }
+        checkpoint = {
+          x: climber.x,
+          y: climber.y,
+          label: scoreMeters + "m"
+        };
+      }
+
+      function returnToCheckpoint() {
+        if (mode !== "playing") {
+          return;
+        }
+        resetPlayerPosition();
+      }
+
+      canvas.addEventListener("contextmenu", function (event) {
+        event.preventDefault();
+      });
+
+      canvas.addEventListener("mousemove", handleMouseMove);
+
+      canvas.addEventListener("mousedown", function (event) {
+        if (mode !== "playing") {
+          return;
+        }
+
+        if (event.button === 0) {
+          mouse.leftDown = true;
+          attemptGrab("left");
+        } else if (event.button === 2) {
+          mouse.rightDown = true;
+          attemptGrab("right");
+        }
+      });
+
+      window.addEventListener("mouseup", function (event) {
+        if (event.button === 0) {
+          mouse.leftDown = false;
+        } else if (event.button === 2) {
+          mouse.rightDown = false;
+        }
+      });
+
+      window.addEventListener("keydown", function (event) {
+        const key = event.key.toLowerCase();
+        if (event.code === "Space") {
+          event.preventDefault();
+          if (mode === "playing") {
+            spaceDown = true;
+          }
+          return;
+        }
+
+        if (key === "escape") {
+          event.preventDefault();
+          if (mode === "playing") {
+            pauseGame();
+          } else if (mode === "paused") {
+            resumeGame();
+          }
+          return;
+        }
+
+        if (mode !== "playing") {
+          return;
+        }
+
+        if (key === "f") {
+          attemptGrab("right");
+        }
+        if (key === "c") {
+          saveCheckpoint();
+        }
+        if (key === "r") {
+          returnToCheckpoint();
+        }
+      });
+
+      window.addEventListener("keyup", function (event) {
+        if (event.code === "Space") {
+          spaceDown = false;
+        }
+      });
+
+      startButton.addEventListener("click", beginGame);
+      restartButton.addEventListener("click", beginGame);
+      restartCornerButton.addEventListener("click", beginGame);
+      pauseButton.addEventListener("click", function () {
+        if (mode === "playing") {
+          pauseGame();
+        } else if (mode === "paused") {
+          resumeGame();
+        }
+      });
+      resumeButton.addEventListener("click", resumeGame);
+
+      function update(dtMs) {
+        if (mode !== "playing") {
+          updateHands(dtMs);
+          spaceDown = false;
+          return;
+        }
+
+        updateMovement(dtMs);
+        updateHands(dtMs);
+
+        if (climber.y < GOAL_Y) {
+          endGame("Summit Reached", "You made it to the top of the mountain.");
+        }
+
+        if (climber.y > START_Y + 430) {
+          endGame("Game Over", "You lost your position and fell too far.");
+        }
+
+        const desiredCamera = climber.y - H * 0.62;
+        cameraY += (desiredCamera - cameraY) * 0.08;
+        cameraY = clamp(cameraY, GOAL_Y - 150, START_Y + 80);
+
+        scoreMeters = Math.max(scoreMeters, Math.floor((START_Y - climber.y) / 10));
+        updateHud();
+      }
+
+      function gameLoop(timeMs) {
+        if (!frameTimePrev) {
+          frameTimePrev = timeMs;
+        }
+        const dtMs = Math.min(33, Math.max(12, timeMs - frameTimePrev));
+        frameTimePrev = timeMs;
+
+        update(dtMs);
+        render();
+        requestAnimationFrame(gameLoop);
+      }
+
+      generateHolds();
+      updateHud();
+      requestAnimationFrame(gameLoop);
+    })();
+  </script>
+  <script src="js/scripts.js"></script>
+</body>
+</html>
