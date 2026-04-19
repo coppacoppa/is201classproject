@@ -384,6 +384,7 @@ button,
 [type=reset],
 [type=submit] {
   -webkit-appearance: button;
+  appearance: button;
 }
 button:not(:disabled),
 [type=button]:not(:disabled),
@@ -442,6 +443,7 @@ legend + * {
 [type=search] {
   outline-offset: -2px;
   -webkit-appearance: textfield;
+  appearance: textfield;
 }
 
 /* rtl:raw:
@@ -463,6 +465,7 @@ legend + * {
 ::file-selector-button {
   font: inherit;
   -webkit-appearance: button;
+  appearance: button;
 }
 
 output {
@@ -10960,10 +10963,10 @@ html {
 .callout {
   padding: 15rem 0;
   background-color: #000;
-  background-image: url("../assets/img/climbinggear5k.jpg");
+  background-image: url("../assets/img/climbinggear5k.png");
   background-position: center center;
   background-repeat: no-repeat;
-  background-size: contain;
+  background-size: cover;
 }
 .callout h2, .callout .h2 {
   font-size: 3.5rem;
@@ -10973,8 +10976,8 @@ html {
 }
 
 footer.footer {
-  padding-top: 5rem;
-  padding-bottom: 5rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 footer.footer .social-link {
   display: block;
@@ -11022,8 +11025,9 @@ footer.footer .social-link:hover {
 }
 .masthead h1, .masthead .h1 {
   font-size: 4rem;
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
+  text-align: center;
 }
 .glass-title {
   display: block;
@@ -11031,7 +11035,7 @@ footer.footer .social-link:hover {
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
-  padding: 0.35em 0.7em;
+  padding: 0.35em 1.2em;
   border-radius: 16px;
   color: #111;
   font-weight: 700;
@@ -11050,6 +11054,12 @@ a.glass-title:active {
   text-decoration: none;
   background: rgba(255, 255, 255, 0.3);
   border-color: rgba(255, 255, 255, 0.2);
+}
+.masthead h1.glass-title {
+  padding-left: 0.75em;
+  padding-right: 0.75em;
+  padding-bottom: 0.25em;
+  padding-top: 0.25em;
 }
 @media (min-width: 992px) {
   .masthead {
@@ -11082,12 +11092,15 @@ a.glass-title:active {
   margin: auto 2rem 2rem;
 }
 .portfolio-item .caption .caption-content h2, .portfolio-item .caption .caption-content .h2 {
-  font-size: 0.8rem;
+  font-size: 2rem;
   text-transform: uppercase;
+  margin-bottom: 1rem;
+  font-weight: 700;
 }
 .portfolio-item .caption .caption-content p {
   font-weight: 300;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
+  margin: 0;
 }
 @media (min-width: 992px) {
   .portfolio-item {
