@@ -1,12 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>Resume</title>
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <link href="css/styles.css" rel="stylesheet" />
+    <style>
+        .resume-page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 1.25rem 2.5rem;
+        }
+
+        .resume-card {
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+        }
+
+        .resume-header {
+            text-align: center;
+            margin-bottom: 1.75rem;
+        }
+
+        .resume-header h1 {
+            margin-bottom: 0.35rem;
+        }
+
+        .resume-contact {
+            margin: 0;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .resume-section {
+            margin-top: 1.75rem;
+        }
+
+        .resume-section h2 {
+            margin-bottom: 0.75rem;
+            border-bottom: 2px solid #dee2e6;
+            padding-bottom: 0.35rem;
+        }
+
+        .resume-entry {
+            margin-bottom: 1.1rem;
+        }
+
+        .resume-entry h3 {
+            margin-bottom: 0.15rem;
+            font-size: 1.15rem;
+        }
+
+        .resume-meta {
+            margin: 0 0 0.55rem;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        .resume-entry ul,
+        .resume-section ul {
+            margin-bottom: 0.2rem;
+        }
+
+        @media (max-width: 700px) {
+            .resume-card {
+                padding: 1.4rem;
+            }
+        }
+    </style>
 </head>
 <body id="page-top">
     <a class="menu-toggle rounded" href="#"><i class="fas fa-bars"></i></a>
@@ -20,22 +85,108 @@
         </ul>
     </nav>
 
-    <h1>Resume</h1>
-    <h3>Bronson Hooley</h3>
-    <hr style="border: 3px solid #000;">
-    <p>435-799-9714 | bronshoo@gmail.com | Provo, UT</p>
-    <br>
-    <h3>Experience</h3>
-    <hr style="border: 3px solid #000;">
-    <h6>Vector Marketing | Provo, UT</h6>
-    <h6>Sales Representative | 12/2025 - 02/2026</h6>
-    
+    <main class="resume-page">
+        <article class="resume-card">
+            <header class="resume-header">
+                <h1>Bronson Hooley</h1>
+                <p class="resume-contact">(435) 799-9714 | bronshoo@gmail.com | Provo, UT</p>
+            </header>
+
+            <section class="resume-section">
+                <h2>Experience</h2>
+
+                <div class="resume-entry">
+                    <h3>Vector Marketing | Provo, UT</h3>
+                    <p class="resume-meta">Sales Representative | 12/2025 - 02/2026</p>
+                    <ul>
+                        <li>Called potential customers to set up appointments</li>
+                        <li>Scheduled demonstrations</li>
+                        <li>Gave sales pitch to customers using techniques taught to me by the employer</li>
+                    </ul>
+                </div>
+
+                <div class="resume-entry">
+                    <h3>Cafe Sabor | Garden City, UT</h3>
+                    <p class="resume-meta">Busser/Food Runner/Host | 06/2025 - 08/2025</p>
+                    <ul>
+                        <li>Bussing tables</li>
+                        <li>Assigning customers to tables</li>
+                        <li>Bringing food to tables</li>
+                        <li>High stress environment</li>
+                    </ul>
+                </div>
+
+                <div class="resume-entry">
+                    <h3>Vicki Cardon Apartments | Logan, UT</h3>
+                    <p class="resume-meta">Apartment cleaning &amp; demolition | 05/2024 - 08/2025</p>
+                    <ul>
+                        <li>Developed and streamlined cleaning routines to improve efficiency and reduce time spent per unit</li>
+                        <li>Performed deep cleaning of apartments using a range of tools and cleaning agents to ensure high sanitation standards</li>
+                        <li>Assisted with demolition projects, including tearing down walls and removing debris in preparation for renovations</li>
+                    </ul>
+                </div>
+
+                <div class="resume-entry">
+                    <h3>Autumn Care Assisted Living | Hyde Park, UT</h3>
+                    <p class="resume-meta">Caregiver | 01/2025 - 04/2025</p>
+                    <ul>
+                        <li>Took care of elderly patients in memory care</li>
+                        <li>Assisted with basic functions such as eating, going to the bathroom, walking, etc.</li>
+                        <li>Cooked and served meals to the residents</li>
+                        <li>Ensured comfortability in their rooms or in the common area</li>
+                    </ul>
+                </div>
+
+                <div class="resume-entry">
+                    <h3>Sweeto Burrito | North Logan, UT</h3>
+                    <p class="resume-meta">Crew Member | 04/2022 - 08/2022</p>
+                    <ul>
+                        <li>Delivered fast, friendly customer service at both the counter and drive-thru</li>
+                        <li>Operated POS system accurately while handling cash and card transactions</li>
+                        <li>Prepared and assembled food orders to meet quality and speed standards</li>
+                        <li>Maintained cleanliness and organization in a high-volume kitchen environment</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="resume-section">
+                <h2>Skills</h2>
+                <p>Customer service, Food service, Communication skills, Restaurant experience, Computer literacy, Time management, Microsoft word, Microsoft excel, English</p>
+            </section>
+
+            <section class="resume-section">
+                <h2>Education</h2>
+                <div class="resume-entry">
+                    <h3>Brigham Young University - Provo, UT</h3>
+                    <p class="resume-meta">Pre-Finance | 04/2032</p>
+                </div>
+
+                <div class="resume-entry">
+                    <h3>Green Canyon High School - North Logan, UT</h3>
+                    <p class="resume-meta">05/2025</p>
+                    <ul>
+                        <li>GPA: 3.98</li>
+                        <li>Completed seven Advanced Placement Courses in:
+                            <ul>
+                                <li>Statistics, Physics, Calculus, European History, U.S. History, English Language, English Literature</li>
+                            </ul>
+                        </li>
+                        <li>AP Scholar Award
+                            <ul>
+                                <li>Awarded for scoring 3 or higher on three or more AP exams</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+        </article>
+    </main>
+
     <footer style="text-align: center; padding: 2rem 0;">
         <a class="scroll-to-top rounded" href="#page-top">Back To Top</a>
     </footer>
-    <!-- Bootstrap core JS-->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Core theme JS-->
     <script src="js/scripts.js"></script>
 </body>
 </html>
