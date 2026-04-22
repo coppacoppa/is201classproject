@@ -7,31 +7,7 @@
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <link href="css/styles.css" rel="stylesheet" />
-    <style>
-        body {
-            min-height: 100vh;
-        }
-
-        .scratch-page {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 3rem 1rem;
-            text-align: center;
-        }
-
-        .viz-wrapper {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        .tableauPlaceholder {
-            width: 100%;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-    </style>
+    <link href="css/scratch.css" rel="stylesheet" />
 </head>
 <body id="page-top">
     <a class="menu-toggle rounded" href="#"><i class="fas fa-bars"></i></a>
@@ -73,9 +49,59 @@
             </div>
         </div>
 
-        <h1 class="mt-5">YouTube Video</h1>
+        <h2 class="mt-5">YouTube Video</h2>
         <h3>Magnus Mitbø</h3>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/Cyya23MPoAI?si=oOKP9QiOIwFNFONr" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/Cyya23MPoAI?si=oOKP9QiOIwFNFONr" title="Magnus Mitbø climbing video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+        <section class="climbing-types-section">
+            <img class="rockclimber-image" src="assets/img/rockclimberscratch.jpg" alt="Rock Climber Scratch">
+            <h3 class="list-section-heading">Types of Climbing</h3>
+            <h4 class="list-section-heading">There are many types of climbing, as shown in the graph above</h4>
+            <ol class="gray-ribbon-list">
+                <li>Ice Climbing
+                    <ul>
+                        <li>Done on frozen waterfalls or ice formations</li>
+                        <li>Uses ice axes and crampons</li>
+                        <li>Requires cold-weather gear</li>
+                    </ul>
+                </li>
+                <li>Traditional (Trad) Climbing
+                    <ul>
+                        <li>Done on natural rock formations</li>
+                        <li>Climbers place their own protection (cams, nuts, etc.)</li>
+                        <li>Focuses on route finding skills</li>
+                    </ul>
+                </li>
+                <li>Sport Climbing
+                    <ul>
+                        <li>Pre-placed bolts for protection</li>
+                        <li>Focus on strength and technique</li>
+                        <li>Common at outdoor crags</li>
+                    </ul>
+                </li>
+                <li>Bouldering
+                    <ul>
+                        <li>Short climbs without rope</li>
+                        <li>Uses crash pads for safety</li>
+                        <li>Focus on power and problem-solving</li>
+                    </ul>
+                </li>
+                <li>Indoor Climbing
+                    <ul>
+                        <li>Done in climbing gyms</li>
+                        <li>Controlled environment</li>
+                        <li>Great for beginners</li>
+                    </ul>
+                </li>
+                <li>Free Soloing
+                    <ul>
+                        <li>No ropes or protection</li>
+                        <li>Extremely dangerous</li>
+                        <li>Requires elite skill and mental control</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
     </main>
 
     <script type="text/javascript">
@@ -102,22 +128,5 @@
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/scripts.js"></script>
-    <br>
-    <br>
-    <p>
-        <h3>Types of Climbing</h3>
-        <h4>There are many types of climbing, and the graph above shows all of them.</h4>
-        <ol>
-            <li>Ice Climbing</li>
-            <li>Traditional (Trad) Climbing</li>
-            <li>Sport Climbing</li>
-            <li>Bouldering</li>
-            <li>Indoor Climbing</li>
-            <li>Free Soloing</li>
-        </ol>
-        <br>
-        <br>
-        
-    </p>
 </body>
 </html>
